@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Sun, Moon, Settings, ShieldCheck, Columns2, MessageSquare, Table2 } from 'lucide-react';
+import { Sparkles, Sun, Moon, Settings, ShieldCheck, Columns2, MessageSquare, Table2, Smartphone } from 'lucide-react';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -7,6 +7,7 @@ interface HeaderProps {
   viewMode: 'split' | 'chat' | 'table';
   onChangeViewMode: (mode: 'split' | 'chat' | 'table') => void;
   onOpenSettings: () => void;
+  onOpenInstallModal: () => void;
   activeTableCount: number;
   totalRecordCount: number;
 }
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   viewMode,
   onChangeViewMode,
   onOpenSettings,
+  onOpenInstallModal,
   activeTableCount,
   totalRecordCount,
 }) => {
@@ -95,8 +97,18 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Right Actions: Local badge, Dark Mode, Settings */}
+        {/* Right Actions: Install PWA, Local badge, Dark Mode, Settings */}
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          {/* Install PWA Button */}
+          <button
+            onClick={onOpenInstallModal}
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-95 shadow-sm transition-all"
+            title="Install Mobile App (PWA)"
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Install App</span>
+          </button>
+
           {/* 100% Local Badge */}
           <div
             className={`hidden lg:flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${

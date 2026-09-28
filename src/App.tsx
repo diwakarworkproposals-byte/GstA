@@ -12,6 +12,7 @@ import { CommandHub } from './components/CommandHub';
 import { InvoiceScannerModal } from './components/InvoiceScannerModal';
 import { SettingsModal } from './components/SettingsModal';
 import { RecordModal } from './components/RecordModal';
+import { InstallPwaModal } from './components/InstallPwaModal';
 import { parseUnstructuredTransaction } from './services/aiParser';
 import { MessageSquare, Table2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -30,6 +31,11 @@ export function App() {
   // Modals state
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
   const [recordModalData, setRecordModalData] = useState<{
     isOpen: boolean;
     table: TableMeta | null;
@@ -39,6 +45,36 @@ export function App() {
     table: null,
     editingRecord: null,
   });
+
+  // Listen for PWA install prompt
+  useEffect(() => {
+    const isIosDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(isIosDevice);
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsInstallable(false);
+      setIsInstallModalOpen(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   // Reload all data from local IndexedDB
   const refreshLocalData = useCallback(async () => {
@@ -239,6 +275,7 @@ export function App() {
           if (mode === 'table') setMobileTab('table');
         }}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         activeTableCount={tables.length}
         totalRecordCount={records.length}
       />
@@ -348,6 +385,15 @@ export function App() {
       </main>
 
       {/* Modals */}
+      <InstallPwaModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+        darkMode={darkMode}
+        onInstallClick={handleInstallClick}
+        isInstallable={isInstallable}
+        isIOS={isIOS}
+      />
+
       <InvoiceScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
