@@ -13,11 +13,13 @@ import { InvoiceScannerModal } from './components/InvoiceScannerModal';
 import { SettingsModal } from './components/SettingsModal';
 import { RecordModal } from './components/RecordModal';
 import { parseUnstructuredTransaction } from './services/aiParser';
+import { MessageSquare, Table2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [viewMode, setViewMode] = useState<'split' | 'chat' | 'table'>('split');
+  const [mobileTab, setMobileTab] = useState<'chat' | 'table'>('chat');
   const [tables, setTables] = useState<TableMeta[]>([]);
   const [records, setRecords] = useState<DynamicRecord[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -138,6 +140,7 @@ export function App() {
     if (viewMode === 'chat') {
       setViewMode('split');
     }
+    setMobileTab('table');
   };
 
   // Manual record add / edit
@@ -230,19 +233,66 @@ export function App() {
         darkMode={darkMode}
         onToggleDarkMode={handleToggleDarkMode}
         viewMode={viewMode}
-        onChangeViewMode={setViewMode}
+        onChangeViewMode={(mode) => {
+          setViewMode(mode);
+          if (mode === 'chat') setMobileTab('chat');
+          if (mode === 'table') setMobileTab('table');
+        }}
         onOpenSettings={() => setIsSettingsOpen(true)}
         activeTableCount={tables.length}
         totalRecordCount={records.length}
       />
 
-      {/* Main Workspace */}
-      <main className="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto">
-        {/* Chat Interface Pane */}
-        {(viewMode === 'split' || viewMode === 'chat') && (
+      {/* Mobile Top Segmented Tab Pill (visible on < lg when in split mode) */}
+      {viewMode === 'split' && (
+        <div
+          className={`lg:hidden px-3 py-2 border-b flex items-center justify-center shrink-0 ${
+            darkMode ? 'bg-zinc-950/80 border-zinc-800' : 'bg-zinc-100/90 border-zinc-200'
+          }`}
+        >
           <div
-            className={`flex-1 flex flex-col min-w-0 ${
-              viewMode === 'split' ? 'border-r border-zinc-800/60 max-w-[50%]' : 'w-full'
+            className={`flex items-center p-1 rounded-2xl border w-full max-w-sm ${
+              darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'
+            }`}
+          >
+            <button
+              onClick={() => setMobileTab('chat')}
+              className={`flex-1 py-1.5 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === 'chat'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Gemini Chat</span>
+            </button>
+            <button
+              onClick={() => setMobileTab('table')}
+              className={`flex-1 py-1.5 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === 'table'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              <Table2 className="w-3.5 h-3.5" />
+              <span>Live Tables ({records.length})</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main Workspace */}
+      <main className="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto relative">
+        {/* Chat Interface Pane */}
+        {((viewMode === 'split' && mobileTab === 'chat') ||
+          viewMode === 'chat' ||
+          (viewMode === 'split' /* desktop side-by-side */)) && (
+          <div
+            className={`flex flex-col min-w-0 h-full ${
+              viewMode === 'split'
+                ? 'w-full lg:w-1/2 lg:border-r border-zinc-800/60 lg:flex ' +
+                  (mobileTab === 'chat' ? 'flex' : 'hidden lg:flex')
+                : 'w-full flex'
             }`}
           >
             <ChatView
@@ -262,8 +312,17 @@ export function App() {
         )}
 
         {/* Dynamic Database & Tables Pane */}
-        {(viewMode === 'split' || viewMode === 'table') && (
-          <div className="flex-1 flex flex-col min-w-0">
+        {((viewMode === 'split' && mobileTab === 'table') ||
+          viewMode === 'table' ||
+          (viewMode === 'split' /* desktop side-by-side */)) && (
+          <div
+            className={`flex flex-col min-w-0 h-full ${
+              viewMode === 'split'
+                ? 'w-full lg:w-1/2 lg:flex ' +
+                  (mobileTab === 'table' ? 'flex' : 'hidden lg:flex')
+                : 'w-full flex'
+            }`}
+          >
             <TableView
               tables={tables}
               records={records}
@@ -275,8 +334,8 @@ export function App() {
               onDeleteRecord={handleDeleteRecord}
               onDeleteTable={handleDeleteTable}
             />
-            {/* If table-only view, also show bottom command hub so user can chat/enter anywhere! */}
-            {viewMode === 'table' && (
+            {/* If on mobile in table mode, or viewMode === 'table', allow command entry at bottom */}
+            {(viewMode === 'table' || (viewMode === 'split' && mobileTab === 'table')) && (
               <CommandHub
                 darkMode={darkMode}
                 onSendMessage={handleSendMessage}
@@ -295,6 +354,7 @@ export function App() {
         darkMode={darkMode}
         onInvoiceSaved={(tableId) => {
           setActiveTableId(tableId);
+          setMobileTab('table');
           refreshLocalData();
         }}
       />

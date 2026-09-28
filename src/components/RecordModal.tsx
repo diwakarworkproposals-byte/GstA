@@ -68,16 +68,16 @@ export const RecordModal: React.FC<RecordModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm">
       <div
-        className={`w-full max-w-lg rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] ${
+        className={`w-full max-w-lg rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] ${
           darkMode ? 'bg-zinc-950 border-zinc-800 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800/60">
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-zinc-800/60 shrink-0">
           <div>
-            <h3 className="font-semibold text-base">
+            <h3 className="font-semibold text-sm sm:text-base">
               {editingRecord ? 'Edit Record' : 'Add New Record'}
             </h3>
             <p className="text-xs text-zinc-400">
@@ -93,7 +93,7 @@ export const RecordModal: React.FC<RecordModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 text-xs">
           {table.columns.map((col) => (
             <div key={col.key} className="space-y-1">
               <label className="block text-zinc-400 font-medium">

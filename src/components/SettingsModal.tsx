@@ -83,21 +83,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm">
       <div
-        className={`w-full max-w-xl rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] ${
+        className={`w-full max-w-xl rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] ${
           darkMode ? 'bg-zinc-950 border-zinc-800 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-indigo-400">
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-zinc-800/60 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center text-indigo-400 shrink-0">
               <Database className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-base">Settings & Local Data</h3>
-              <p className="text-xs text-zinc-400">Manage IndexedDB storage, backups, and inputs</p>
+              <h3 className="font-semibold text-sm sm:text-base">Settings & Local Data</h3>
+              <p className="text-[11px] text-zinc-400">Manage IndexedDB storage, backups, and inputs</p>
             </div>
           </div>
           <button
@@ -109,7 +109,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto space-y-6 text-xs">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 text-xs">
           {/* Privacy & Zero-Cloud Notice */}
           <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-3">
             <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />

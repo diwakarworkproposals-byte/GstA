@@ -23,6 +23,7 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
   const [statusMessage, setStatusMessage] = useState('');
   const [extractedData, setExtractedData] = useState<ExtractedGSTInvoice | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -170,21 +171,21 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm">
       <div
-        className={`w-full max-w-2xl rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] ${
+        className={`w-full max-w-2xl rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden flex flex-col max-h-[92vh] ${
           darkMode ? 'bg-zinc-950 border-zinc-800 text-zinc-100' : 'bg-white border-zinc-200 text-zinc-900'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-zinc-800/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white">
+        <div className="flex items-center justify-between p-3.5 sm:p-5 border-b border-zinc-800/60 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shrink-0">
               <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-base">GST Bill OCR Scanner</h3>
-              <p className="text-xs text-zinc-400">100% Offline • In-Browser Tesseract Engine</p>
+              <h3 className="font-semibold text-sm sm:text-base">GST Bill OCR Scanner</h3>
+              <p className="text-[11px] text-zinc-400">100% Offline • In-Browser Vision</p>
             </div>
           </div>
           <button
@@ -196,60 +197,88 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-5">
-          {/* Upload / Try Sample Box */}
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
           {!imagePreview ? (
-            <div className="space-y-4">
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all ${
-                  darkMode
-                    ? 'border-zinc-800 hover:border-indigo-500/60 bg-zinc-900/30'
-                    : 'border-zinc-300 hover:border-indigo-500 bg-zinc-50'
-                }`}
-              >
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-3">
-                  <Upload className="w-6 h-6" />
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Mobile Camera Direct Capture */}
+                <div
+                  onClick={() => cameraInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                    darkMode
+                      ? 'border-zinc-800 hover:border-indigo-500/60 bg-zinc-900/40'
+                      : 'border-zinc-300 hover:border-indigo-500 bg-zinc-50'
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-2">
+                    <Camera className="w-5 h-5" />
+                  </div>
+                  <h4 className="font-medium text-xs text-center">Capture with Camera</h4>
+                  <p className="text-[10px] text-zinc-400 text-center mt-0.5">
+                    Take photo directly from phone
+                  </p>
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                 </div>
-                <h4 className="font-medium text-sm">Upload GST Invoice Image</h4>
-                <p className="text-xs text-zinc-400 text-center max-w-sm mt-1">
-                  Supports JPG, PNG, WebP bills. Extracted offline using local machine vision.
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+
+                {/* File Upload from Device */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                    darkMode
+                      ? 'border-zinc-800 hover:border-indigo-500/60 bg-zinc-900/40'
+                      : 'border-zinc-300 hover:border-indigo-500 bg-zinc-50'
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <h4 className="font-medium text-xs text-center">Upload from Gallery</h4>
+                  <p className="text-[10px] text-zinc-400 text-center mt-0.5">
+                    JPG, PNG, or WebP bill images
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
               </div>
 
-              <div className="flex items-center justify-center">
-                <span className="text-xs text-zinc-500 px-3">OR</span>
+              <div className="flex items-center justify-center py-0.5">
+                <span className="text-[11px] text-zinc-500">OR</span>
               </div>
 
               {/* Sample Bill Generator Button */}
               <button
                 type="button"
                 onClick={loadSampleGSTInvoice}
-                className={`w-full py-3 px-4 rounded-2xl border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
+                className={`w-full py-2.5 sm:py-3 px-3 rounded-2xl border text-xs font-medium flex items-center justify-center gap-2 transition-all ${
                   darkMode
                     ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-200'
                     : 'bg-zinc-100 hover:bg-zinc-200 border-zinc-300 text-zinc-800'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-pink-400" />
-                <span>Try Instant Demo with Sample GST Purchase Bill</span>
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                <span>Instant Demo: Load Sample GST Purchase Bill</span>
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Preview image */}
-              <div className="relative rounded-2xl overflow-hidden border border-zinc-800 max-h-56 bg-zinc-900 flex items-center justify-center">
+              <div className="relative rounded-2xl overflow-hidden border border-zinc-800 max-h-48 sm:max-h-56 bg-zinc-900 flex items-center justify-center">
                 <img
                   src={imagePreview}
                   alt="Bill Preview"
-                  className="max-h-56 w-auto object-contain"
+                  className="max-h-48 sm:max-h-56 w-auto object-contain"
                 />
                 <button
                   onClick={() => {
@@ -266,15 +295,15 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
 
               {/* Progress bar when processing */}
               {isProcessing && (
-                <div className="space-y-2 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+                <div className="space-y-1.5 p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-indigo-400 font-medium flex items-center gap-2">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      {statusMessage}
+                    <span className="text-indigo-400 font-medium flex items-center gap-2 truncate">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                      <span className="truncate">{statusMessage}</span>
                     </span>
-                    <span className="font-mono text-indigo-300">{progress}%</span>
+                    <span className="font-mono text-indigo-300 shrink-0">{progress}%</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 transition-all duration-300"
                       style={{ width: `${progress}%` }}
@@ -286,27 +315,27 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
               {/* Extracted Data Card */}
               {extractedData && (
                 <div
-                  className={`p-4 rounded-2xl border space-y-3 ${
+                  className={`p-3 sm:p-4 rounded-2xl border space-y-2.5 ${
                     darkMode ? 'bg-zinc-900/80 border-emerald-500/30' : 'bg-emerald-50/50 border-emerald-300'
                   }`}
                 >
-                  <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Successfully Extracted & Stored in GST Purchase Bills</span>
+                  <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <span>Parsed & Stored in GST Purchase Bills</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
                       <span className="text-zinc-500 block text-[10px]">Vendor / Firm</span>
-                      <span className="font-semibold">{extractedData.vendorName}</span>
+                      <span className="font-semibold truncate block">{extractedData.vendorName}</span>
                     </div>
                     <div>
                       <span className="text-zinc-500 block text-[10px]">GSTIN</span>
-                      <span className="font-mono text-indigo-400">{extractedData.gstin}</span>
+                      <span className="font-mono text-indigo-400 text-[11px] truncate block">{extractedData.gstin}</span>
                     </div>
                     <div>
                       <span className="text-zinc-500 block text-[10px]">Invoice # & Date</span>
-                      <span>
+                      <span className="truncate block">
                         {extractedData.invoiceNumber} • {extractedData.date}
                       </span>
                     </div>
@@ -321,12 +350,12 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
               )}
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="pt-1">
                 {!extractedData ? (
                   <button
                     onClick={handleStartOCR}
                     disabled={isProcessing}
-                    className="w-full py-3 rounded-xl font-medium text-xs bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-500 text-white hover:opacity-95 shadow-md flex items-center justify-center gap-2"
+                    className="w-full py-2.5 sm:py-3 rounded-xl font-medium text-xs bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-500 text-white hover:opacity-95 shadow-md flex items-center justify-center gap-2"
                   >
                     {isProcessing ? (
                       <>
@@ -343,7 +372,7 @@ export const InvoiceScannerModal: React.FC<InvoiceScannerModalProps> = ({
                 ) : (
                   <button
                     onClick={handleDone}
-                    className="w-full py-3 rounded-xl font-medium text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md flex items-center justify-center gap-2"
+                    className="w-full py-2.5 sm:py-3 rounded-xl font-medium text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md flex items-center justify-center gap-2"
                   >
                     <FileCheck2 className="w-4 h-4" />
                     <span>View in GST Purchase Bills Table</span>

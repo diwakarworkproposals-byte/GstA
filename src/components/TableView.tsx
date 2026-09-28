@@ -88,14 +88,13 @@ export const TableView: React.FC<TableViewProps> = ({
 
   // Calculate summary metrics for the table
   const metrics = useMemo(() => {
-    if (!activeTable) return { totalRecords: 0, totalAmount: 0 };
+    if (!activeTable) return { totalRecords: 0, totalAmount: 0, primaryColName: 'Total' };
 
     let totalAmount = 0;
     const currencyCols = activeTable.columns.filter((c) => c.type === 'currency');
 
     for (const r of tableRecords) {
       if (currencyCols.length > 0) {
-        // Use primary currency column
         const primaryKey = currencyCols[0].key;
         totalAmount += Number(r.data[primaryKey] || 0);
       }
@@ -148,9 +147,9 @@ export const TableView: React.FC<TableViewProps> = ({
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
-      {/* Dynamic Tabs Navigation */}
+      {/* Dynamic Tabs Navigation (horizontally scrollable on mobile) */}
       <div
-        className={`px-4 pt-3 border-b flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 ${
+        className={`px-3 sm:px-4 pt-2.5 sm:pt-3 border-b flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 select-none ${
           darkMode ? 'bg-zinc-950/60 border-zinc-800' : 'bg-zinc-50 border-zinc-200'
         }`}
       >
@@ -165,7 +164,7 @@ export const TableView: React.FC<TableViewProps> = ({
                 onSelectTable(table.id);
                 setSearchQuery('');
               }}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-t-xl text-xs font-medium border-t border-x transition-all shrink-0 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-t-xl text-xs font-medium border-t border-x transition-all shrink-0 ${
                 isActive
                   ? darkMode
                     ? 'bg-zinc-900 border-zinc-700/80 text-white shadow-sm'
@@ -176,9 +175,9 @@ export const TableView: React.FC<TableViewProps> = ({
               }`}
             >
               {renderTabIcon(table.icon)}
-              <span>{table.displayName}</span>
+              <span className="whitespace-nowrap">{table.displayName}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
                   isActive
                     ? 'bg-indigo-500/20 text-indigo-400 font-semibold'
                     : darkMode
@@ -194,38 +193,40 @@ export const TableView: React.FC<TableViewProps> = ({
       </div>
 
       {activeTable && (
-        <div className="flex-1 flex flex-col p-4 overflow-hidden">
+        <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden">
           {/* Table Header & Metrics Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5">
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-base text-zinc-100 flex items-center gap-2">
-                  <span className={`${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>{activeTable.displayName}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                  <span className={darkMode ? 'text-zinc-100' : 'text-zinc-900'}>
+                    {activeTable.displayName}
+                  </span>
                   {!activeTable.isSystem && (
-                    <span className="text-[10px] bg-pink-500/10 text-pink-400 border border-pink-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <Sparkles className="w-2.5 h-2.5" /> Auto-Generated Dynamic Tab
+                    <span className="text-[9px] sm:text-[10px] bg-pink-500/10 text-pink-400 border border-pink-500/30 px-1.5 sm:px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5" /> Dynamic
                     </span>
                   )}
                 </h3>
               </div>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                {activeTable.columns.length} columns inferred dynamically from natural language entries
+              <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">
+                {activeTable.columns.length} columns adaptively generated
               </p>
             </div>
 
-            {/* Quick Metrics */}
+            {/* Quick Metrics Cards */}
             <div className="flex items-center gap-2">
               <div
-                className={`px-3 py-1.5 rounded-xl border text-xs ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-[11px] sm:text-xs ${
                   darkMode ? 'bg-zinc-900/80 border-zinc-800' : 'bg-zinc-100 border-zinc-200'
                 }`}
               >
-                <span className="text-zinc-400">Total Records: </span>
+                <span className="text-zinc-400">Records: </span>
                 <span className="font-semibold text-indigo-400">{metrics.totalRecords}</span>
               </div>
               {metrics.totalAmount > 0 && (
                 <div
-                  className={`px-3 py-1.5 rounded-xl border text-xs ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-[11px] sm:text-xs ${
                     darkMode ? 'bg-zinc-900/80 border-zinc-800' : 'bg-zinc-100 border-zinc-200'
                   }`}
                 >
@@ -238,27 +239,27 @@ export const TableView: React.FC<TableViewProps> = ({
             </div>
           </div>
 
-          {/* Search and Action Buttons Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-3">
+          {/* Search & Actions Bar (stacks responsively) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pb-2.5">
             <div
               className={`relative flex items-center rounded-xl border px-3 py-1.5 w-full sm:w-64 ${
                 darkMode ? 'bg-zinc-900 border-zinc-800 text-zinc-200' : 'bg-white border-zinc-200 text-zinc-800'
               }`}
             >
-              <Search className="w-3.5 h-3.5 text-zinc-400 mr-2" />
+              <Search className="w-3.5 h-3.5 text-zinc-400 mr-2 shrink-0" />
               <input
                 type="text"
-                placeholder="Search anything in this table..."
+                placeholder="Search in this table..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent border-0 outline-none text-xs w-full"
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-end">
               <button
                 onClick={() => onAddRecord(activeTable.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-95 shadow-sm transition-all"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-95 shadow-sm transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Record</span>
@@ -266,7 +267,7 @@ export const TableView: React.FC<TableViewProps> = ({
               <button
                 onClick={handleExportCSV}
                 disabled={tableRecords.length === 0}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                   tableRecords.length === 0
                     ? 'opacity-40 cursor-not-allowed border-zinc-800'
                     : darkMode
@@ -276,12 +277,12 @@ export const TableView: React.FC<TableViewProps> = ({
                 title="Download CSV"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Export CSV</span>
+                <span className="hidden sm:inline">Export CSV</span>
               </button>
               {!activeTable.isSystem && (
                 <button
                   onClick={() => onDeleteTable(activeTable.id)}
-                  className={`p-1.5 rounded-xl border text-rose-400 hover:bg-rose-500/10 border-rose-500/20 transition-all`}
+                  className="p-1.5 rounded-xl border text-rose-400 hover:bg-rose-500/10 border-rose-500/20 transition-all shrink-0"
                   title="Delete Dynamic Table"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -290,44 +291,45 @@ export const TableView: React.FC<TableViewProps> = ({
             </div>
           </div>
 
-          {/* Interactive Structured Table */}
+          {/* Table Container with smooth touch scrolling */}
           <div
             className={`flex-1 overflow-auto rounded-2xl border shadow-inner ${
               darkMode ? 'bg-zinc-950/40 border-zinc-800/80' : 'bg-white border-zinc-200'
             }`}
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {displayRecords.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center text-zinc-400 mb-3">
-                  <Layers className="w-6 h-6" />
+              <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-10 h-10 rounded-2xl bg-zinc-800/50 flex items-center justify-center text-zinc-400 mb-2">
+                  <Layers className="w-5 h-5" />
                 </div>
-                <h4 className="text-sm font-semibold text-zinc-300">No records found</h4>
-                <p className="text-xs text-zinc-500 max-w-sm mt-1">
-                  Type an entry in the Command Hub below or click "Add Record" to populate this table.
+                <h4 className="text-xs sm:text-sm font-semibold text-zinc-300">No records found</h4>
+                <p className="text-[11px] text-zinc-500 max-w-xs mt-1">
+                  Type an entry in the Command Hub or tap "+ Add Record" to add data.
                 </p>
               </div>
             ) : (
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full text-left text-xs border-collapse min-w-full">
                 <thead
                   className={`sticky top-0 z-10 backdrop-blur-md border-b ${
                     darkMode ? 'bg-zinc-900/90 border-zinc-800 text-zinc-400' : 'bg-zinc-100/90 border-zinc-200 text-zinc-600'
                   }`}
                 >
                   <tr>
-                    <th className="p-3 font-semibold w-12 text-center">#</th>
+                    <th className="p-2.5 sm:p-3 font-semibold w-10 text-center">#</th>
                     {activeTable.columns.map((col) => (
                       <th
                         key={col.key}
                         onClick={() => handleSort(col.key)}
-                        className="p-3 font-semibold cursor-pointer hover:text-indigo-400 transition-colors select-none"
+                        className="p-2.5 sm:p-3 font-semibold cursor-pointer hover:text-indigo-400 transition-colors select-none whitespace-nowrap"
                       >
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <span>{col.label}</span>
                           <ArrowUpDown className="w-3 h-3 text-zinc-500" />
                         </div>
                       </th>
                     ))}
-                    <th className="p-3 font-semibold text-right pr-4">Actions</th>
+                    <th className="p-2.5 sm:p-3 font-semibold text-right pr-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/40">
@@ -338,14 +340,14 @@ export const TableView: React.FC<TableViewProps> = ({
                         darkMode ? 'hover:bg-zinc-900/50 text-zinc-300' : 'hover:bg-zinc-50 text-zinc-800'
                       }`}
                     >
-                      <td className="p-3 text-center text-zinc-500 font-mono text-[11px]">
+                      <td className="p-2.5 sm:p-3 text-center text-zinc-500 font-mono text-[10px] sm:text-[11px]">
                         {index + 1}
                       </td>
                       {activeTable.columns.map((col) => {
                         const val = record.data[col.key];
 
                         return (
-                          <td key={col.key} className="p-3 whitespace-nowrap">
+                          <td key={col.key} className="p-2.5 sm:p-3 whitespace-nowrap text-[11px] sm:text-xs">
                             {col.type === 'currency' ? (
                               <span className="font-semibold text-emerald-400">
                                 {val !== undefined && val !== null
@@ -354,7 +356,7 @@ export const TableView: React.FC<TableViewProps> = ({
                               </span>
                             ) : col.type === 'badge' ? (
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                                className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium border ${
                                   darkMode
                                     ? 'bg-zinc-800 border-zinc-700 text-zinc-300'
                                     : 'bg-zinc-100 border-zinc-300 text-zinc-700'
@@ -363,7 +365,7 @@ export const TableView: React.FC<TableViewProps> = ({
                                 {String(val || '-')}
                               </span>
                             ) : col.type === 'date' ? (
-                              <span className="text-zinc-400 font-mono text-[11px]">
+                              <span className="text-zinc-400 font-mono text-[10px] sm:text-[11px]">
                                 {String(val || '-')}
                               </span>
                             ) : (
@@ -374,8 +376,8 @@ export const TableView: React.FC<TableViewProps> = ({
                           </td>
                         );
                       })}
-                      <td className="p-3 text-right pr-4 whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                      <td className="p-2.5 sm:p-3 text-right pr-3 whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => onEditRecord(record)}
                             className="p-1 rounded-lg hover:bg-indigo-500/20 text-zinc-400 hover:text-indigo-400 transition-colors"

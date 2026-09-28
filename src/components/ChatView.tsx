@@ -25,11 +25,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const renderFormattedContent = (content: string) => {
     const lines = content.split('\n');
     return (
-      <div className="space-y-1.5 text-sm leading-relaxed">
+      <div className="space-y-1.5 text-xs sm:text-sm leading-relaxed">
         {lines.map((line, idx) => {
           if (line.startsWith('### ')) {
             return (
-              <h4 key={idx} className="font-semibold text-base pt-1 pb-0.5 text-indigo-400">
+              <h4 key={idx} className="font-semibold text-sm sm:text-base pt-1 pb-0.5 text-indigo-400">
                 {line.replace('### ', '')}
               </h4>
             );
@@ -37,8 +37,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
           if (line.startsWith('* ') || line.startsWith('- ')) {
             const rawText = line.substring(2);
             return (
-              <div key={idx} className="flex items-start gap-2 pl-1">
-                <span className="text-indigo-400 mt-1">•</span>
+              <div key={idx} className="flex items-start gap-1.5 sm:gap-2 pl-0.5 sm:pl-1">
+                <span className="text-indigo-400 mt-0.5">•</span>
                 <span dangerouslySetInnerHTML={{ __html: formatBoldAndCode(rawText) }} />
               </div>
             );
@@ -58,24 +58,24 @@ export const ChatView: React.FC<ChatViewProps> = ({
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-indigo-300">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-      .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-zinc-800 text-xs font-mono text-pink-400">$1</code>');
+      .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-zinc-800 text-[11px] font-mono text-pink-400">$1</code>');
   };
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+    <div className="flex-1 overflow-y-auto px-2.5 sm:px-4 py-3 sm:py-6 space-y-3.5 sm:space-y-6">
       {messages.map((msg) => {
         const isUser = msg.role === 'user';
 
         return (
           <div
             key={msg.id}
-            className={`flex items-start gap-3.5 max-w-3xl ${
+            className={`flex items-start gap-2 sm:gap-3.5 max-w-3xl ${
               isUser ? 'ml-auto flex-row-reverse' : ''
             }`}
           >
             {/* Avatar */}
             <div
-              className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 ${
                 isUser
                   ? darkMode
                     ? 'bg-zinc-800 text-zinc-300'
@@ -83,12 +83,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   : 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-pink-500 text-white shadow-md shadow-indigo-500/20'
               }`}
             >
-              {isUser ? <User className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+              {isUser ? <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </div>
 
             {/* Message Bubble & Content */}
             <div
-              className={`rounded-2xl p-4 shadow-sm max-w-2xl transition-all ${
+              className={`rounded-2xl p-3 sm:p-4 shadow-sm max-w-[88%] sm:max-w-2xl transition-all ${
                 isUser
                   ? darkMode
                     ? 'bg-indigo-600/20 border border-indigo-500/30 text-zinc-100 rounded-tr-none'
@@ -103,32 +103,32 @@ export const ChatView: React.FC<ChatViewProps> = ({
               {/* Action Preview Card: Record Created */}
               {msg.metadata?.action === 'record_created' && msg.metadata.recordData && (
                 <div
-                  className={`mt-3 p-3 rounded-xl border ${
+                  className={`mt-2.5 sm:mt-3 p-2.5 sm:p-3 rounded-xl border ${
                     darkMode
                       ? 'bg-zinc-950/70 border-zinc-800 text-zinc-300'
                       : 'bg-zinc-50 border-zinc-200 text-zinc-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between pb-2 border-b border-zinc-800/40 mb-2">
-                    <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Dynamic Schema Entry Stored
+                  <div className="flex items-center justify-between pb-1.5 border-b border-zinc-800/40 mb-2">
+                    <span className="flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-emerald-400">
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Saved to Local Table</span>
                     </span>
                     {msg.metadata.tableId && (
                       <button
                         onClick={() => onNavigateToTable(msg.metadata!.tableId!)}
-                        className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium"
+                        className="flex items-center gap-1 text-[11px] sm:text-xs text-indigo-400 hover:text-indigo-300 font-medium"
                       >
                         <span>View Table</span>
                         <ArrowUpRight className="w-3 h-3" />
                       </button>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
                     {Object.entries(msg.metadata.recordData).map(([k, v]) => (
-                      <div key={k} className="flex flex-col">
+                      <div key={k} className="flex items-center sm:flex-col justify-between sm:justify-start">
                         <span className="text-[10px] text-zinc-500 capitalize">{k}</span>
-                        <span className="font-medium truncate">
+                        <span className="font-medium truncate max-w-[60%] sm:max-w-full">
                           {typeof v === 'number' && (k.toLowerCase().includes('amount') || k.toLowerCase().includes('incentive') || k.toLowerCase().includes('balance'))
                             ? `₹${v.toLocaleString('en-IN')}`
                             : String(v)}
@@ -141,9 +141,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
               {/* Action Preview Card: Query Result with Metrics */}
               {msg.metadata?.action === 'query_result' && msg.metadata.queryResult && (
-                <div className="mt-3 space-y-2">
+                <div className="mt-2.5 sm:mt-3 space-y-2">
                   {msg.metadata.queryResult.metrics && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
                       {msg.metadata.queryResult.metrics.map((m, i) => (
                         <div
                           key={i}
@@ -151,8 +151,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
                             darkMode ? 'bg-zinc-950/50 border-zinc-800' : 'bg-zinc-50 border-zinc-200'
                           }`}
                         >
-                          <div className="text-[10px] text-zinc-400">{m.label}</div>
-                          <div className="text-sm font-semibold text-indigo-400">{m.value}</div>
+                          <div className="text-[9px] sm:text-[10px] text-zinc-400 truncate">{m.label}</div>
+                          <div className="text-xs sm:text-sm font-semibold text-indigo-400 truncate">{m.value}</div>
                         </div>
                       ))}
                     </div>
@@ -160,16 +160,16 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
                   {msg.metadata.queryResult.details && msg.metadata.queryResult.details.length > 0 && (
                     <div
-                      className={`overflow-x-auto rounded-lg border text-xs ${
+                      className={`overflow-x-auto rounded-lg border text-[11px] sm:text-xs ${
                         darkMode ? 'border-zinc-800 bg-zinc-950/40' : 'border-zinc-200 bg-white'
                       }`}
                     >
-                      <table className="w-full text-left">
+                      <table className="w-full text-left min-w-[280px]">
                         <thead>
-                          <tr className={`border-b ${darkMode ? 'border-zinc-800' : 'border-zinc-200'}`}>
-                            <th className="p-2">Date</th>
-                            <th className="p-2">Entity/Item</th>
-                            <th className="p-2 text-right">Amount</th>
+                          <tr className={`border-b ${darkMode ? 'border-zinc-800 text-zinc-400' : 'border-zinc-200 text-zinc-600'}`}>
+                            <th className="p-1.5 sm:p-2">Date</th>
+                            <th className="p-1.5 sm:p-2">Entity/Item</th>
+                            <th className="p-1.5 sm:p-2 text-right">Amount</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -180,11 +180,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
                                 darkMode ? 'border-zinc-800/60' : 'border-zinc-100'
                               }`}
                             >
-                              <td className="p-2 text-zinc-400">{row.date || 'Recent'}</td>
-                              <td className="p-2 font-medium">
+                              <td className="p-1.5 sm:p-2 text-zinc-400 text-[10px] sm:text-xs">{row.date || 'Recent'}</td>
+                              <td className="p-1.5 sm:p-2 font-medium truncate max-w-[130px]">
                                 {row.employee || row.supplier || row.description || row.item || 'Entry'}
                               </td>
-                              <td className="p-2 text-right text-emerald-400 font-semibold">
+                              <td className="p-1.5 sm:p-2 text-right text-emerald-400 font-semibold">
                                 ₹{Number(row.saleAmount || row.paidAmount || row.amount || row.totalAmount || 0).toLocaleString('en-IN')}
                               </td>
                             </tr>
@@ -198,7 +198,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
               {/* Timestamp */}
               <div
-                className={`text-[10px] mt-2 ${
+                className={`text-[9px] sm:text-[10px] mt-1.5 ${
                   isUser ? 'text-indigo-200 text-right' : 'text-zinc-500'
                 }`}
               >
@@ -211,17 +211,17 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
       {/* Typing / Loading indicator */}
       {isLoading && (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-pink-500 flex items-center justify-center text-white shadow-md">
-            <Sparkles className="w-4 h-4 animate-spin" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-pink-500 flex items-center justify-center text-white shadow-md">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
           </div>
           <div
-            className={`p-3.5 rounded-2xl rounded-tl-none border text-xs flex items-center gap-2 ${
+            className={`p-2.5 sm:p-3.5 rounded-2xl rounded-tl-none border text-xs flex items-center gap-2 ${
               darkMode ? 'bg-zinc-900 border-zinc-800 text-zinc-400' : 'bg-white border-zinc-200 text-zinc-500'
             }`}
           >
             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-            <span>Comprehending intent & querying IndexedDB...</span>
+            <span className="text-[11px] sm:text-xs">Comprehending intent locally...</span>
           </div>
         </div>
       )}
