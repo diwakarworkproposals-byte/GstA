@@ -146,7 +146,7 @@ export const TableView: React.FC<TableViewProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col h-full overflow-hidden w-full">
       {/* Dynamic Tabs Navigation (horizontally scrollable on mobile) */}
       <div
         className={`px-3 sm:px-4 pt-2.5 sm:pt-3 border-b flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0 select-none ${
@@ -193,7 +193,7 @@ export const TableView: React.FC<TableViewProps> = ({
       </div>
 
       {activeTable && (
-        <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden">
+        <div className="flex-1 min-h-0 flex flex-col p-3 sm:p-4 overflow-hidden w-full">
           {/* Table Header & Metrics Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5">
             <div>
@@ -293,7 +293,7 @@ export const TableView: React.FC<TableViewProps> = ({
 
           {/* Table Container with smooth touch scrolling */}
           <div
-            className={`flex-1 overflow-auto rounded-2xl border shadow-inner ${
+            className={`flex-1 min-h-0 overflow-auto rounded-2xl border shadow-inner ${
               darkMode ? 'bg-zinc-950/40 border-zinc-800/80' : 'bg-white border-zinc-200'
             }`}
             style={{ WebkitOverflowScrolling: 'touch' }}

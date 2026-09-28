@@ -82,7 +82,10 @@ export const CommandHub: React.FC<CommandHubProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-2.5 sm:px-4 pb-2.5 sm:pb-4 pt-1.5 shrink-0">
+    <div
+      className="w-full max-w-4xl mx-auto px-2.5 sm:px-4 pb-2.5 sm:pb-4 pt-1.5 shrink-0"
+      style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+    >
       {/* Quick Suggestion Pills */}
       <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1.5 mb-1 select-none">
         <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-zinc-400 shrink-0">

@@ -260,7 +260,7 @@ export function App() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
+      className={`h-[100dvh] h-screen w-full flex flex-col font-sans transition-colors duration-200 overflow-hidden ${
         darkMode ? 'bg-zinc-950 text-zinc-100' : 'bg-zinc-50 text-zinc-900'
       }`}
     >
@@ -319,13 +319,13 @@ export function App() {
       )}
 
       {/* Main Workspace */}
-      <main className="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto relative">
+      <main className="flex-1 min-h-0 flex overflow-hidden max-w-7xl w-full mx-auto relative">
         {/* Chat Interface Pane */}
         {((viewMode === 'split' && mobileTab === 'chat') ||
           viewMode === 'chat' ||
           (viewMode === 'split' /* desktop side-by-side */)) && (
           <div
-            className={`flex flex-col min-w-0 h-full ${
+            className={`flex flex-col min-w-0 min-h-0 h-full ${
               viewMode === 'split'
                 ? 'w-full lg:w-1/2 lg:border-r border-zinc-800/60 lg:flex ' +
                   (mobileTab === 'chat' ? 'flex' : 'hidden lg:flex')
@@ -353,7 +353,7 @@ export function App() {
           viewMode === 'table' ||
           (viewMode === 'split' /* desktop side-by-side */)) && (
           <div
-            className={`flex flex-col min-w-0 h-full ${
+            className={`flex flex-col min-w-0 min-h-0 h-full ${
               viewMode === 'split'
                 ? 'w-full lg:w-1/2 lg:flex ' +
                   (mobileTab === 'table' ? 'flex' : 'hidden lg:flex')
